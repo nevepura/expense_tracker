@@ -11,11 +11,24 @@ class NewExpense extends StatefulWidget {
 
 class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
 
   @override
   void dispose() {
     _titleController.dispose();
+    _amountController.dispose();
     super.dispose();
+  }
+
+  void _presentDatePicker() {
+    final now = DateTime.now();
+    var oneYearAgo = DateTime(now.year - 1, now.month, now.day);
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: oneYearAgo,
+      lastDate: now,
+    );
   }
 
   @override
@@ -34,11 +47,48 @@ class _NewExpenseState extends State<NewExpense> {
           ),
           Row(
             children: [
+              Expanded(
+                child: TextField(
+                  controller: _amountController,
+                  maxLength: 50,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    prefixText: '\$',
+                    label: Text('Enter amount'),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              Expanded(
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text('Selected date'),
+                  IconButton(
+                    onPressed: _presentDatePicker,
+                    icon: const Icon(Icons.date_range),
+                  ),
+                ],
+              ))
+            ],
+          ),
+          Row(
+            children: [
               ElevatedButton(
                 onPressed: () {
                   print(_titleController.text);
+                  print(_amountController
+                      .text); // for now it is a string, will b converted to num later
                 },
                 child: const Text("Save title"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
               )
             ],
           )
