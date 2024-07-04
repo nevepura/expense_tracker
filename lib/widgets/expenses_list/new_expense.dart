@@ -1,4 +1,8 @@
+import 'package:expense_tracker/models/expense.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+final formatter = DateFormat('yyyy-MM-dd');
 
 class NewExpense extends StatefulWidget {
   const NewExpense({super.key});
@@ -12,6 +16,8 @@ class NewExpense extends StatefulWidget {
 class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
+  DateTime? _selectedDate;
+  Category? _selectedCategory = Category.food;
 
   @override
   void dispose() {
@@ -20,15 +26,19 @@ class _NewExpenseState extends State<NewExpense> {
     super.dispose();
   }
 
-  void _presentDatePicker() {
+  void _presentDatePicker() async {
     final now = DateTime.now();
     var oneYearAgo = DateTime(now.year - 1, now.month, now.day);
-    showDatePicker(
+    final pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate != null ? _selectedDate! : DateTime.now(),
       firstDate: oneYearAgo,
       lastDate: now,
     );
+
+    setState(() {
+      _selectedDate = pickedDate;
+    });
   }
 
   @override
@@ -62,20 +72,41 @@ class _NewExpenseState extends State<NewExpense> {
                 width: 16,
               ),
               Expanded(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text('Selected date'),
-                  IconButton(
-                    onPressed: _presentDatePicker,
-                    icon: const Icon(Icons.date_range),
-                  ),
-                ],
-              ))
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(_selectedDate == null
+                        ? "No date"
+                        : formatter.format(_selectedDate!)),
+                    IconButton(
+                      onPressed: _presentDatePicker,
+                      icon: const Icon(Icons.date_range),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
           Row(
             children: [
+              DropdownButton(
+                  value: _selectedCategory,
+                  items: Category.values
+                      .map((category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(category.name[0].toUpperCase() +
+                                category.name.substring(1)),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    print(value);
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }),
               ElevatedButton(
                 onPressed: () {
                   print(_titleController.text);
