@@ -50,8 +50,31 @@ class _ExpensesState extends State<Expenses> {
     setState(() => _registeredExpenses.add(expense));
   }
 
+  void removeExpense(Expense exp) {
+    int removedIndex = _registeredExpenses.indexOf(exp);
+    setState(() {
+      _registeredExpenses.remove(exp);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Deleted expense: ${exp.title}"),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: "Undo",
+          onPressed: () {
+            setState(() {
+              _registeredExpenses.insert(removedIndex, exp);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (sheetCtx) => NewExpense(onAddExpense: addExpense),
     );
@@ -59,6 +82,14 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    Widget mainContent = const Text("No expenses yet");
+    if (_registeredExpenses.isNotEmpty) {
+      mainContent = ExpensesList(
+        expenses: _registeredExpenses,
+        onRemoveExpense: removeExpense,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("The amazing XpenZ app"),
@@ -73,9 +104,7 @@ class _ExpensesState extends State<Expenses> {
         children: [
           const Text("put Chart here"),
           Expanded(
-            child: ExpensesList(
-              expenses: _registeredExpenses,
-            ),
+            child: mainContent,
           ),
         ],
       ),
