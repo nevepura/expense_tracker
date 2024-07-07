@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 final formatter = DateFormat('yyyy-MM-dd');
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
+  const NewExpense({super.key, required this.onAddExpense});
+
+  final void Function(Expense) onAddExpense;
 
   @override
   State<StatefulWidget> createState() {
-    return new _NewExpenseState();
+    return _NewExpenseState();
   }
 }
 
@@ -17,13 +19,51 @@ class _NewExpenseState extends State<NewExpense> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   DateTime? _selectedDate;
-  Category? _selectedCategory = Category.food;
+  Category _selectedCategory = Category.food;
 
   @override
   void dispose() {
     _titleController.dispose();
     _amountController.dispose();
     super.dispose();
+  }
+
+  void _submitExpense() {
+    final enteredAmount = double.tryParse(_amountController.text);
+    final invalidAmount = enteredAmount == null || enteredAmount < 0;
+    final invalidTitle = _titleController.text.trim().isEmpty;
+    final invalidDate = _selectedDate == null;
+
+    if (invalidAmount || invalidTitle || invalidDate) {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text(
+                "Some idiot forgot to put date, title or the amount is wrong"),
+            actions: [
+              TextButton(
+                child: const Text("Pretend it wasn't you"),
+                onPressed: () => Navigator.pop(ctx),
+              ),
+              TextButton(
+                child: const Text("Close"),
+                onPressed: () => Navigator.pop(ctx),
+              )
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    final ex = Expense(
+        title: _titleController.text,
+        category: _selectedCategory,
+        date: _selectedDate!,
+        amount: enteredAmount);
+    widget.onAddExpense(ex);
   }
 
   void _presentDatePicker() async {
@@ -47,6 +87,7 @@ class _NewExpenseState extends State<NewExpense> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
+          const Text("New expense"),
           TextField(
             controller: _titleController,
             maxLength: 50,
@@ -110,10 +151,12 @@ class _NewExpenseState extends State<NewExpense> {
               ElevatedButton(
                 onPressed: () {
                   print(_titleController.text);
-                  print(_amountController
-                      .text); // for now it is a string, will b converted to num later
+                  print(_amountController.text);
+                  // for now it is a string, will b converted to num later TODO
+                  _submitExpense();
+                  Navigator.pop(context);
                 },
-                child: const Text("Save title"),
+                child: const Text("Save"),
               ),
               TextButton(
                 onPressed: () {
