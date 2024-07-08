@@ -148,22 +148,29 @@ class _NewExpenseState extends State<NewExpense> {
                       _selectedCategory = value;
                     });
                   }),
-              ElevatedButton(
-                onPressed: () {
-                  print(_titleController.text);
-                  print(_amountController.text);
-                  // for now it is a string, will b converted to num later TODO
-                  _submitExpense();
-                  //Navigator.pop(context);
-                },
-                child: const Text("Save"),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        print(_titleController.text);
+                        print(_amountController.text);
+                        // for now it is a string, will b converted to num later TODO
+                        _submitExpense();
+                        //Navigator.pop(context);
+                      },
+                      child: const Text("Save"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ],
+                ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              )
             ],
           )
         ],
