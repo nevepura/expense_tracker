@@ -20,30 +20,6 @@ class _ExpensesState extends State<Expenses> {
       amount: 0.3,
       date: DateTime.now(),
     ),
-    Expense(
-      title: "Salad",
-      category: Category.food,
-      amount: 8.5,
-      date: DateTime.now(),
-    ),
-    Expense(
-      title: "Road trip",
-      category: Category.travel,
-      amount: 50,
-      date: DateTime.now(),
-    ),
-    Expense(
-      title: "Cables",
-      category: Category.work,
-      amount: 12.99,
-      date: DateTime.now(),
-    ),
-    Expense(
-      title: "Toys",
-      category: Category.leisure,
-      amount: 25,
-      date: DateTime.now(),
-    ),
   ];
 
   void addExpense(Expense expense) {
@@ -82,7 +58,19 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
-    Widget mainContent = const Text("No expenses yet");
+    Widget mainContent = Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 10,
+      ),
+      child: const Text(
+        textAlign: TextAlign.end,
+        "No expenses yet",
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      ),
+    );
     if (_registeredExpenses.isNotEmpty) {
       mainContent = ExpensesList(
         expenses: _registeredExpenses,
@@ -102,7 +90,11 @@ class _ExpensesState extends State<Expenses> {
       ),
       body: Column(
         children: [
-          const Text("put Chart here"),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 15),
+            alignment: Alignment.center,
+            child: const Text("Insert Chart here"),
+          ),
           Expanded(
             child: mainContent,
           ),
