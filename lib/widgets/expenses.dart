@@ -59,13 +59,16 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
     Widget mainContent = Container(
       margin: const EdgeInsets.symmetric(
         horizontal: 20,
         vertical: 10,
       ),
       child: const Text(
-        textAlign: TextAlign.end,
+        textAlign: TextAlign.center,
         "No expenses yet",
         style: TextStyle(
           fontSize: 20,
@@ -89,18 +92,25 @@ class _ExpensesState extends State<Expenses> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 15),
-            alignment: Alignment.center,
-            child: Chart(expenses: _registeredExpenses),
-          ),
-          Expanded(
-            child: mainContent,
-          ),
-        ],
-      ),
+      body: width < height
+          ? Column(
+              children: [
+                Chart(expenses: _registeredExpenses),
+                Expanded(
+                  child: mainContent,
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: Chart(expenses: _registeredExpenses),
+                ),
+                Expanded(
+                  child: mainContent,
+                ),
+              ],
+            ),
     );
   }
 }
